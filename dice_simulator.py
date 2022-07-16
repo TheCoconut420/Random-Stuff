@@ -71,7 +71,7 @@ class dice:
             self.dice_list.sort()
         print("")
         print("You rolled: ")
-        pprint(self.dice_list)
+        print(self.dice_list)
         print("The sum of the dice is: " + str(self.sum))
         print("The average of the dice is: " + str(self.average))
         print("")
