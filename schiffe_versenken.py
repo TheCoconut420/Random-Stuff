@@ -8,6 +8,8 @@ class ShipDestroyer:
         self.player_count = 2
         self.player = 1
         self.ship_length = 4
+        self.player_1_win = False
+        self.player_2_win = False
 
     def get_play_field(self):
         print("\n")
@@ -299,12 +301,88 @@ class ShipDestroyer:
                 
         self.get_ship_field()
 
+    def place_all_ships(self):
+        print(f"Now player {self.player} place your ships:")
+        print(f"Place your {self.ship_length}-cell ship:")
+        self.ship_length = 4
+        self.place_ship()
+        self.ship_length = 3
+        for i in range(2):
+            print(f"Place your {self.ship_length}-cell ship:")
+            self.place_ship()
+        self.ship_length = 2
+        for i in range(3):
+            print(f"Place your {self.ship_length}-cell ship:")
+            self.place_ship()
+        self.ship_length = 1
+        for i in range(4):
+            print(f"Place your {self.ship_length}-cell ship:")        
+            self.place_ship()
+        if self.player == 1:
+            self.player = 2
+            self.ship_length = 4
+            self.get_play_field()
+            self.place_all_ships()
+    
+    def shot(self):
+        if self.player == 1:
+            self.get_ship_field()
+            self.get_shot_number()
+            self.get_shot_letter()
+            if self.ship_field_1[self.shot_number - 1 + self.shot_letter] == "X":
+                print(f"You hit the ship!")
+                self.ship_field_1[self.shot_number - 1 + self.shot_letter] = "x"
+                self.play_field_1[self.shot_number - 1 + self.shot_letter] = "X"
+                self.shot()
+            elif self.ship_field_1[self.shot_number - 1 + self.shot_letter] == "o":
+                print(f"You barely missed the ship!")
+                self.play_field_1[self.shot_number - 1 + self.shot_letter] = "O"
+            else:
+                print(f"You missed the ship!")
+                self.play_field_1[self.shot_number - 1 + self.shot_letter] = "o"
+        else:
+            self.get_ship_field()
+            self.get_shot_number()
+            self.get_shot_letter()
+            if self.ship_field_2[self.shot_number - 1 + self.shot_letter] == "X":
+                print(f"You hit the ship!")
+                self.ship_field_2[self.shot_number - 1 + self.shot_letter] = "x"
+                self.play_field_2[self.shot_number - 1 + self.shot_letter] = "X"
+                self.shot()
+            elif self.ship_field_2[self.shot_number - 1 + self.shot_letter] == "o":
+                print(f"You barely missed the ship!")
+                self.play_field_2[self.shot_number - 1 + self.shot_letter] = "O"
+            else:
+                print(f"You missed the ship!")
+                self.play_field_2[self.shot_number - 1 + self.shot_letter] = "o"
+
+    def check_win(self):
+        if self.player == 1:
+            if "X" not in self.ship_field_2:
+                print(f"Player {self.player} wins!")
+                return True
+            else:
+                return False
+        else:
+            if "X" not in self.ship_field_1:
+                print(f"Player {self.player} wins!")
+                return True
+            else:
+                return False
+    
+    def game(self):
+        print("Welcome to the game!")
+        game.get_ship_field()
+        self.place_all_ships()
+        while True:
+            self.shot()
+            if self.check_win():
+                break
+            self.player = 2
+            self.shot()
+            if self.check_win():
+                break
+            self.player = 1
+
 game = ShipDestroyer()
-game.get_ship_field()
-print("\n")
-for i in range(2):
-    game.place_ship()
-
-
-
-
+game.game()
