@@ -1,6 +1,3 @@
-from traceback import print_tb
-
-
 class ShipDestroyer:
     def __init__(self):
         self.wave = " "
@@ -10,9 +7,9 @@ class ShipDestroyer:
         self.ship_field_2 = [self.wave] * 100
         self.player_count = 2
         self.player = 1
-        self.ship_length = 0
+        self.ship_length = 4
 
-    def print_play_field(self):
+    def get_play_field(self):
         print("\n")
         print("    1    2    3    4    5    6    7    8    9    10")
         if self.player == 1:
@@ -38,7 +35,7 @@ class ShipDestroyer:
             print("I", self.play_field_2[80:90])
             print("J", self.play_field_2[90:100])
 
-    def print_ship_field(self):
+    def get_ship_field(self):
         print("\n")
         print("    1    2    3    4    5    6    7    8    9    10")
         if self.player == 1:
@@ -70,28 +67,28 @@ class ShipDestroyer:
         if self.shot_letter == "A":
             self.shot_letter = 0
         elif self.shot_letter == "B":
-            self.shot_letter = 1
+            self.shot_letter = 10
         elif self.shot_letter == "C":
-            self.shot_letter = 2
+            self.shot_letter = 20
         elif self.shot_letter == "D":
-            self.shot_letter = 3
+            self.shot_letter = 30
         elif self.shot_letter == "E":
-            self.shot_letter = 4
+            self.shot_letter = 40
         elif self.shot_letter == "F":
-            self.shot_letter = 5
+            self.shot_letter = 50
         elif self.shot_letter == "G":
-            self.shot_letter = 6
+            self.shot_letter = 60
         elif self.shot_letter == "H":
-            self.shot_letter = 7
+            self.shot_letter = 70
         elif self.shot_letter == "I":
-            self.shot_letter = 8
+            self.shot_letter = 80
         elif self.shot_letter == "J":
-            self.shot_letter = 9
+            self.shot_letter = 90
         else:
             print("You entered an invalid letter!")
             self.get_shot_letter()
         if self.rotate == "y":
-            if self.shot_letter + self.ship_length > 10:
+            if (self.shot_letter / 10) + self.ship_length > 10:
                 print("You entered an illegal input!")
                 self.get_shot_letter()
         
@@ -107,21 +104,207 @@ class ShipDestroyer:
                 print("You entered an illegal input!")
                 self.get_shot_number()
 
-    def place_ship(self):
-        print("The ship will be placed from left to right.")
-        print("For example, if you place the ship on A1, it will be placed on A1, A2, A3, A4.")
-        print("You can also rotate the ship by 90° degrees.")
-        print("Then it will be placed on A1, B1, C1, D1.")
+    def get_rotate(self):
+        self.rotate = input("Rotate? (y/n): ")
+        self.rotate = self.rotate.lower()
+        if self.rotate != "y" and self.rotate != "n":
+            print("You entered an illegal input!")
+            self.get_rotate()
+
+    def check_placement(self):
         if self.player == 1:
-            self.print_play_field()
-            print("")
-            print("Now you will place the 4-tile ship on the play field.")
-            self.rotate = input("Do you want to turn the ship 90° degrees? (y/n): ")
-            print("Where do you want to place the 4-tile ship?")
-            self.ship_length = 4
-            self.get_shot_letter()
-            self.get_shot_number()
-            
+            if self.rotate == "n":
+                for i in range(self.ship_length):
+                    if self.ship_field_1[self.shot_number - 1 + i + self.shot_letter] == "o" or self.ship_field_1[self.shot_number - 1 + i + self.shot_letter] == "X":
+                        self.invalid_input()
+            else:
+                for i in range(self.ship_length):
+                    if self.play_field_1[self.shot_number - 1 + (i*10) + self.shot_letter] == "o" or self.ship_field_1[self.shot_number - 1 + (i*10) + self.shot_letter] == "X":
+                        self.invalid_input()
+        else:
+            if self.rotate == "n":
+                for i in range(self.ship_length):
+                    if self.ship_field_2[self.shot_number - 1 + i + self.shot_letter] == "o" or self.play_field_2[self.shot_number - 1 + i + self.shot_letter] == "X":
+                        self.invalid_input()
+            else:
+                for i in range(self.ship_length):
+                    if self.play_field_2[self.shot_number - 1 + (i*10) + self.shot_letter] == "o" or self.ship_field_2[self.shot_number - 1 + (i*10) + self.shot_letter] == "X":
+                        self.invalid_input()
+
+    def invalid_input(self):
+        print("You entered an illegal input!")
+        self.get_ship_field()
+        self.get_rotate()
+        self.get_shot_letter()
+        self.get_shot_number()
+        self.check_placement()
+
+    def place_ship(self):
+        self.get_rotate()
+        self.get_shot_letter()
+        self.get_shot_number()
+        self.check_placement()
+        if self.player == 1:
+            for i in range(self.ship_length):
+                if self.rotate == "n":
+                    self.ship_field_1[self.shot_number - 1 + i + self.shot_letter] = "X"
+                    if self.shot_number != 1 and self.shot_number + self.ship_length != 11 and self.shot_letter != 0 and self.shot_letter != 90:
+                        self.ship_field_1[(self.shot_number - 1 + i + self.shot_letter) - 10] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + i + self.shot_letter) + 10] = "o"
+                        self.ship_field_1[(self.shot_number - 1 - 1 + self.shot_letter)] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + self.shot_letter + self.ship_length)] = "o"
+                    elif self.shot_number == 1 and self.shot_letter == 0:
+                        self.ship_field_1[(self.shot_number - 1 + i + self.shot_letter) + 10] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + self.shot_letter + self.ship_length)] = "o"
+                    elif self.shot_number != 1 and self.shot_number + self.ship_length != 11 and self.shot_letter == 0:
+                        self.ship_field_1[(self.shot_number - 1 + i + self.shot_letter) + 10] = "o"
+                        self.ship_field_1[(self.shot_number - 1 - 1 + self.shot_letter)] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + self.shot_letter + self.ship_length)] = "o"
+                    elif self.shot_number + self.ship_length == 11 and self.shot_letter == 0:
+                        self.ship_field_1[(self.shot_number - 1 + i + self.shot_letter) + 10] = "o"
+                        self.ship_field_1[(self.shot_number - 1 - 1 + self.shot_letter)] = "o"
+                    elif self.shot_number == 1 and self.shot_letter == 90:
+                        self.ship_field_1[(self.shot_number - 1 + i + self.shot_letter) - 10] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + self.shot_letter + self.ship_length)] = "o"
+                    elif self.shot_number != 1 and self.shot_number + self.ship_length != 11 and self.shot_letter == 90:
+                        self.ship_field_1[(self.shot_number - 1 + i + self.shot_letter) - 10] = "o"
+                        self.ship_field_1[(self.shot_number - 1 - 1 + self.shot_letter)] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + self.shot_letter + self.ship_length)] = "o"
+                    elif self.shot_number + self.ship_length == 11 and self.shot_letter == 90:
+                        self.ship_field_1[(self.shot_number - 1 + i + self.shot_letter) - 10] = "o"
+                        self.ship_field_1[(self.shot_number - 1 - 1 + self.shot_letter)] = "o"
+                    elif self.shot_number == 1 and self.shot_letter != 0 and self.shot_letter != 90:
+                        self.ship_field_1[(self.shot_number - 1 + i + self.shot_letter) + 10] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + i + self.shot_letter) - 10] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + self.shot_letter + self.ship_length)] = "o"
+                    elif self.shot_number + self.ship_length == 11 and self.shot_letter != 0 and self.shot_letter != 90:
+                        self.ship_field_1[(self.shot_number - 1 + i + self.shot_letter) - 10] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + i + self.shot_letter) + 10] = "o"
+                        self.ship_field_1[(self.shot_number - 1 - 1 + self.shot_letter)] = "o"
+                else:
+                    self.ship_field_1[self.shot_number - 1 + (i*10) + self.shot_letter] = "X"
+                    if self.shot_number != 1 and self.shot_number != 10 and self.shot_letter != 0 and (self.shot_letter / 10) + self.ship_length != 10:
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) - 1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 - 10 + self.shot_letter)] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
+                    elif self.shot_number == 1 and self.shot_letter == 0:
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
+                    elif self.shot_number != 1 and self.shot_number != 10 and self.shot_letter == 0:
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) + -1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
+                    elif self.shot_number == 10 and self.shot_letter == 0:
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) + -1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
+                    elif self.shot_number == 1 and (self.shot_letter / 10) + self.ship_length == 10:
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 - 10 + self.shot_letter)] = "o"
+                    elif self.shot_number != 1 and self.shot_number != 10 and (self.shot_letter / 10) + self.ship_length == 10:
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) - 1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 - 10 + self.shot_letter)] = "o"
+                    elif self.shot_number == 10 and (self.shot_letter / 10) + self.ship_length == 10:
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) - 1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 - 10 + self.shot_letter)] = "o"
+                    elif self.shot_number != 1 and self.shot_number != 10 and self.shot_letter and self.shot_letter == 0:
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) - 1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
+                    elif self.shot_number == 1 and self.shot_letter != 0 and (self.shot_letter / 10) + self.ship_length != 10:
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 - 10 + self.shot_letter)] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
+                    elif self.shot_number == 10 and self.shot_letter != 0 and (self.shot_letter / 10) + self.ship_length != 10:
+                        self.ship_field_1[(self.shot_number - 1 + (i*10) + self.shot_letter) - 1] = "o"
+                        self.ship_field_1[(self.shot_number - 1 - 10 + self.shot_letter)] = "o"
+                        self.ship_field_1[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
+        else:
+            for i in range(self.ship_length):
+                if self.rotate == "n":
+                    self.ship_field_2[self.shot_number - 1 + i + self.shot_letter] = "X"
+                    if self.shot_number != 1 and self.shot_number + self.ship_length != 11 and self.shot_letter != 0 and self.shot_letter != 90:
+                        self.ship_field_2[(self.shot_number - 1 + i + self.shot_letter) - 10] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + i + self.shot_letter) + 10] = "o"
+                        self.ship_field_2[(self.shot_number - 1 - 1 + self.shot_letter)] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + self.shot_letter + self.ship_length)] = "o"
+                    elif self.shot_number == 1 and self.shot_letter == 0:
+                        self.ship_field_2[(self.shot_number - 1 + i + self.shot_letter) + 10] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + self.shot_letter + self.ship_length)] = "o"
+                    elif self.shot_number != 1 and self.shot_number + self.ship_length != 11 and self.shot_letter == 0:
+                        self.ship_field_2[(self.shot_number - 1 + i + self.shot_letter) + 10] = "o"
+                        self.ship_field_2[(self.shot_number - 1 - 1 + self.shot_letter)] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + self.shot_letter + self.ship_length)] = "o"
+                    elif self.shot_number + self.ship_length == 11 and self.shot_letter == 0:
+                        self.ship_field_2[(self.shot_number - 1 + i + self.shot_letter) + 10] = "o"
+                        self.ship_field_2[(self.shot_number - 1 - 1 + self.shot_letter)] = "o"
+                    elif self.shot_number == 1 and self.shot_letter == 90:
+                        self.ship_field_2[(self.shot_number - 1 + i + self.shot_letter) - 10] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + self.shot_letter + self.ship_length)] = "o"
+                    elif self.shot_number != 1 and self.shot_number + self.ship_length != 11 and self.shot_letter == 90:
+                        self.ship_field_2[(self.shot_number - 1 + i + self.shot_letter) - 10] = "o"
+                        self.ship_field_2[(self.shot_number - 1 - 1 + self.shot_letter)] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + self.shot_letter + self.ship_length)] = "o"
+                    elif self.shot_number + self.ship_length == 11 and self.shot_letter == 90:
+                        self.ship_field_2[(self.shot_number - 1 + i + self.shot_letter) - 10] = "o"
+                        self.ship_field_2[(self.shot_number - 1 - 1 + self.shot_letter)] = "o"
+                    elif self.shot_number == 1 and self.shot_letter != 0 and self.shot_letter != 90:
+                        self.ship_field_2[(self.shot_number - 1 + i + self.shot_letter) + 10] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + i + self.shot_letter) - 10] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + self.shot_letter + self.ship_length)] = "o"
+                    elif self.shot_number + self.ship_length == 11 and self.shot_letter != 0 and self.shot_letter != 90:
+                        self.ship_field_2[(self.shot_number - 1 + i + self.shot_letter) - 10] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + i + self.shot_letter) + 10] = "o"
+                        self.ship_field_2[(self.shot_number - 1 - 1 + self.shot_letter)] = "o"
+                else:
+                    self.ship_field_2[self.shot_number - 1 + (i*10) + self.shot_letter] = "X"
+                    if self.shot_number != 1 and self.shot_number != 10 and self.shot_letter != 0 and (self.shot_letter / 10) + self.ship_length != 10:
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) - 1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 - 10 + self.shot_letter)] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
+                    elif self.shot_number == 1 and self.shot_letter == 0:
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
+                    elif self.shot_number != 1 and self.shot_number != 10 and self.shot_letter == 0:
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) + -1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
+                    elif self.shot_number == 10 and self.shot_letter == 0:
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) + -1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
+                    elif self.shot_number == 1 and (self.shot_letter / 10) + self.ship_length == 10:
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 - 10 + self.shot_letter)] = "o"
+                    elif self.shot_number != 1 and self.shot_number != 10 and (self.shot_letter / 10) + self.ship_length == 10:
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) - 1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 - 10 + self.shot_letter)] = "o"
+                    elif self.shot_number == 10 and (self.shot_letter / 10) + self.ship_length == 10:
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) - 1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 - 10 + self.shot_letter)] = "o"
+                    elif self.shot_number != 1 and self.shot_number != 10 and self.shot_letter and self.shot_letter == 0:
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) - 1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
+                    elif self.shot_number == 1 and self.shot_letter != 0 and (self.shot_letter / 10) + self.ship_length != 10:
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) + 1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 - 10 + self.shot_letter)] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
+                    elif self.shot_number == 10 and self.shot_letter != 0 and (self.shot_letter / 10) + self.ship_length != 10:
+                        self.ship_field_2[(self.shot_number - 1 + (i*10) + self.shot_letter) - 1] = "o"
+                        self.ship_field_2[(self.shot_number - 1 - 10 + self.shot_letter)] = "o"
+                        self.ship_field_2[(self.shot_number - 1 + (10 * self.ship_length) + self.shot_letter)] = "o"
                 
+        self.get_ship_field()
+
 game = ShipDestroyer()
-game.place_ship()
+game.get_ship_field()
+print("\n")
+for i in range(2):
+    game.place_ship()
+
+
+
+
