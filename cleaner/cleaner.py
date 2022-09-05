@@ -1,3 +1,10 @@
+import os
+file_list = []
+
+for root, dirs, files in os.walk(r"C:\Users\stefa\OneDrive\Dokumente\GitHub\Random-Stuff\cleaner"):
+    for file in files:
+        file_list.append(os.path.join(root, file))
+
 class Cleaner:
     def __init__(self, file):
         self.file = file
@@ -7,7 +14,6 @@ class Cleaner:
 
     def get_hex(self, file):
         with open(file, "rb") as file:
-            print("\n")
             f = file.read(6)
             self.hex = f.hex().upper()
 
@@ -18,9 +24,9 @@ class Cleaner:
             print("GIF")
         elif self.hex == self.jpg:
             print("JPG")
-        else:
-            print("Unknown file type")
 
-cleaner = Cleaner(r"C:\Users\stefa\OneDrive\Dokumente\GitHub\Random-Stuff\cleaner\test.ex")
-cleaner.get_hex(cleaner.file)
-cleaner.check_hex()
+print("\n")
+for i in file_list:
+    c = Cleaner(i)
+    c.get_hex(i)
+    c.check_hex()
