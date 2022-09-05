@@ -1,17 +1,26 @@
-from webbrowser import get
+class Cleaner:
+    def __init__(self, file):
+        self.file = file
+        self.png = "89504E470D0A"
+        self.gif = "474946383961"
+        self.jpg = "FFD8FFE00010"
 
+    def get_hex(self, file):
+        with open(file, "rb") as file:
+            print("\n")
+            f = file.read(6)
+            self.hex = f.hex().upper()
 
-hex_list = []
-hex_list.append("25 50 44 46 2D")
-print(hex_list[0])
+    def check_hex(self):
+        if self.hex == self.png:
+            print("PNG")
+        elif self.hex == self.gif:
+            print("GIF")
+        elif self.hex == self.jpg:
+            print("JPG")
+        else:
+            print("Unknown file type")
 
-
-def get_hex(file):
-    with open(file, "rb") as file:
-        print("\n")
-        f = file.read(10)
-        l = f.splitlines()
-        hex = (f.hex(" "))
-        print(hex)
-
-get_hex(r"C:\Users\Stefan\Desktop\3_Hygiene_Belehrungsunterlagen-und-Erklaerung_08.pdf")
+cleaner = Cleaner(r"C:\Users\stefa\OneDrive\Dokumente\GitHub\Random-Stuff\cleaner\test.ex")
+cleaner.get_hex(cleaner.file)
+cleaner.check_hex()
