@@ -1,5 +1,5 @@
-with open(r"C:\Users\Stefan\Desktop\3_Hygiene_Belehrungsunterlagen-und-Erklaerung_08.pdf", "rb") as file:
+with open("jpg.tiff", "rb") as file:
     print("\n")
-    f = file.read(308)
+    f = file.read(300)
     l = f.splitlines()
     print(f.hex(" "))
